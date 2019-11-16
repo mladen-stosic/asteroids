@@ -4,8 +4,8 @@ import math
 from ship import Ship
 from pygame import image as img
 
-winHeight = 800
-winWidth = 1200
+winHeight = 1080
+winWidth = 1920
 
 pygame.init()
 win = pygame.display.set_mode((winWidth, winHeight))

@@ -4,7 +4,7 @@ from pygame import image as img
 
 class Projectile:
 
-    def __init__(self, surface, winWidth, winHeight, x, y, heading):
+    def __init__(self, surface, winWidth, winHeight, x, y, heading, shipvel):
         self.surface = surface
         self.winWidth = winWidth
         self.winHeight = winHeight
@@ -14,7 +14,7 @@ class Projectile:
         self.heading = heading
         self.img = 0
         self.inBound = True
-        self.projectileVelocity = 1
+        self.projectileVelocity = shipvel + 3
 
     def updateImg(self):
         self.x -= (math.cos(math.radians(self.heading) - (math.pi / 2))) * self.projectileVelocity

@@ -20,6 +20,8 @@ class Ship:
         self.acceleration = 0.1
         self.deceleration = 0.3
         self.fire = False
+        self.center = [self.xpos, self.ypos]
+        self.projectiles = []
 
 
     def rotate(self, angle):
@@ -27,7 +29,7 @@ class Ship:
         self.heading += angle
 
     def move(self):
-
+        self.center =  [self.xpos + 25, self.ypos + 25]
         self.xpos -= (math.cos(math.radians(self.heading) - (math.pi / 2))) * self.velocity
         self.ypos += (math.sin(math.radians(self.heading) - (math.pi / 2))) * self.velocity
         if self.forward:
@@ -45,9 +47,23 @@ class Ship:
         self.image = img.load('a-01.png')
         self.image = pygame.transform.scale(self.image, (50, 50))
 
-    def fire(self):
-        pass
+
     def projectileInit(self):
-        self.projectile = Projectile(self.surface, self.winWidth, self.winHeight, self.xpos, self.ypos, self.heading)
+        self.projectiles.append(Projectile(self.surface, self.winWidth, self.winHeight, self.xpos + 25, self.ypos + 25, self.heading, self.velocity))
+
     def projectileUpdate(self):
-        self.projectile.updateImg()
+
+        i = 0
+        while ((i <len(self.projectiles)) & (len(self.projectiles) > 0)):
+            self.projectiles[i].updateImg()
+            if not self.projectiles[i].inBound:
+                self.projectiles.pop(i)
+                if i > 1:
+                    i-=1
+            i+=1
+        # if len(self.projectiles) > 0:
+        #     for i in range(len(self.projectiles)):
+        #         print(len(self.projectiles), i)
+        #         self.projectiles[i].updateImg()
+        #         if not self.projectiles[i].inBound:
+        #             self.projectiles.pop(i)
