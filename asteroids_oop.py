@@ -1,7 +1,7 @@
 import pygame
 import random
 import math
-from klase import Ship
+from ship import Ship
 from pygame import image as img
 
 winHeight = 800
@@ -10,7 +10,7 @@ winWidth = 1200
 pygame.init()
 win = pygame.display.set_mode((winWidth, winHeight))
 
-spaceShip = Ship(win, 0, 0.1, 6, winWidth/2, winHeight/2, False)
+spaceShip = Ship(win, 0, 0.1, 6, winWidth/2, winHeight/2, False, winWidth, winHeight)
 spaceShip.loadimg()
 
 run = True
@@ -60,6 +60,11 @@ def drawScreen(shipimg, heading, posx, posy):
     shipimg = rot_center(shipimg, heading)
     win.blit(shipimg, (posx, posy))
 
+    spaceShip.move()
+    if spaceShip.fire:
+        spaceShip.projectileUpdate()
+
+
 
     pygame.display.update()
 ### ======================================================
@@ -80,7 +85,11 @@ while run:
         spaceShip.rotate(5)
     if keys[pygame.K_UP]:
         spaceShip.forward = True
-    if keys[pygame.K_RIGHT]:
-        pass
-    spaceShip.move()
+    if keys[pygame.K_SPACE]:
+        spaceShip.fire = True
+        spaceShip.projectileInit()
+
+
+
+
     drawScreen(spaceShip.image, spaceShip.heading, spaceShip.xpos, spaceShip.ypos)
