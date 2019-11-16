@@ -14,7 +14,7 @@ class Projectile:
         self.heading = heading
         self.img = 0
         self.inBound = True
-        self.projectileVelocity = shipvel + 3
+        self.projectileVelocity = shipvel + 4
 
     def updateImg(self):
         self.x -= (math.cos(math.radians(self.heading) - (math.pi / 2))) * self.projectileVelocity

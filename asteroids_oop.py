@@ -4,13 +4,13 @@ import math
 from ship import Ship
 from pygame import image as img
 
-winHeight = 600
-winWidth = 800
+winHeight = 800
+winWidth = 1200
 
 pygame.init()
 win = pygame.display.set_mode((winWidth, winHeight))
 
-spaceShip = Ship(win, 0, 0.1, 6, winWidth/2, winHeight/2, False, winWidth, winHeight)
+spaceShip = Ship(win, 0, 0.1, 6, winWidth/2 - 25, winHeight/2 - 25, False, winWidth, winHeight)
 spaceShip.loadimg()
 
 run = True
@@ -74,6 +74,7 @@ while run:
     spaceShip.forward = False
     pygame.time.delay(10)
 
+    # keypress handling
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False

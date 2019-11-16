@@ -16,7 +16,10 @@ class Ship:
         self.xpos = xpos
         self.ypos = ypos
         self.forward = forward
-        self.image = 0
+        self.imagelist = []
+        self.imagelist.append(img.load('spaceship0.png'))
+        self.imagelist.append(img.load('spaceship1.png'))
+        self.image = self.imagelist[0]
         self.acceleration = 0.1
         self.deceleration = 0.3
         self.fire = False
@@ -29,10 +32,12 @@ class Ship:
         self.heading += angle
 
     def move(self):
+        self.image = self.imagelist[0]
         self.center =  [self.xpos + 25, self.ypos + 25]
         self.xpos -= (math.cos(math.radians(self.heading) - (math.pi / 2))) * self.velocity
         self.ypos += (math.sin(math.radians(self.heading) - (math.pi / 2))) * self.velocity
         if self.forward:
+            self.image = self.imagelist[1]
             if self.velocity < self.maxvelocity:
                 self.velocity += self.acceleration
             else:
@@ -44,7 +49,7 @@ class Ship:
                 self.velocity -= self.deceleration
 
     def loadimg(self):
-        self.image = img.load('a-01.png')
+
         self.image = pygame.transform.scale(self.image, (50, 50))
 
 
