@@ -4,8 +4,8 @@ import math
 from klase import Ship
 from pygame import image as img
 
-winHeight = 600
-winWidth = 800
+winHeight = 800
+winWidth = 1200
 
 pygame.init()
 win = pygame.display.set_mode((winWidth, winHeight))
@@ -73,17 +73,14 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-
-
     keys =  pygame.key.get_pressed()
     if keys[pygame.K_RIGHT]:
         spaceShip.rotate(-5)
     if keys[pygame.K_LEFT]:
         spaceShip.rotate(5)
     if keys[pygame.K_UP]:
-        spaceShip.move()
-    if not spaceShip.forward:
-        spaceShip.velocity = 0.1
+        spaceShip.forward = True
     if keys[pygame.K_RIGHT]:
         pass
+    spaceShip.move()
     drawScreen(spaceShip.image, spaceShip.heading, spaceShip.xpos, spaceShip.ypos)

@@ -14,21 +14,27 @@ class Ship:
         self.ypos = ypos
         self.forward = forward
         self.image = 0
+        self.acceleration = 0.1
+        self.deceleration = 0.3
 
 
     def rotate(self, angle):
         self.heading += angle
 
     def move(self):
-        if self.velocity < self.maxvelocity:
-            self.xpos -= (math.cos(math.radians(self.heading) - (math.pi / 2))) * self.velocity
-            self.ypos += (math.sin(math.radians(self.heading) - (math.pi / 2))) * self.velocity
-            self.velocity += 0.1
-            self.forward = True
+
+        self.xpos -= (math.cos(math.radians(self.heading) - (math.pi / 2))) * self.velocity
+        self.ypos += (math.sin(math.radians(self.heading) - (math.pi / 2))) * self.velocity
+        if self.forward:
+            if self.velocity < self.maxvelocity:
+                self.velocity += self.acceleration
+            else:
+                self.velocity = self.maxvelocity
+        elif self.velocity < 0:
+            self.velocity = 0
         else:
-            self.xpos -= (math.cos(math.radians(self.heading) - (math.pi / 2))) * self.maxvelocity
-            self.ypos += (math.sin(math.radians(self.heading) - (math.pi / 2))) * self.maxvelocity
-            self.forward = True
+            if self.velocity > 0:
+                self.velocity -= self.deceleration
 
     def loadimg(self):
         self.image = img.load('a-01.png')
