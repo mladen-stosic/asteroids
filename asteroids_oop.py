@@ -4,12 +4,15 @@ import math
 from ship import Ship
 from pygame import image as img
 
+# set window size
 winHeight = 800
 winWidth = 1200
 
+#initialize pygame and window surface
 pygame.init()
 win = pygame.display.set_mode((winWidth, winHeight))
 
+# create spaceship object and load sprites
 spaceShip = Ship(win, 0, 0.1, 6, winWidth/2 - 25, winHeight/2 - 25, False, winWidth, winHeight)
 spaceShip.loadimg()
 
