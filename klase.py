@@ -19,6 +19,7 @@ class Ship:
 
 
     def rotate(self, angle):
+        self.heading = self.heading % 360
         self.heading += angle
 
     def move(self):
