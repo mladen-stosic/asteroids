@@ -4,8 +4,8 @@ import math
 from ship import Ship
 from pygame import image as img
 
-winHeight = 1080
-winWidth = 1920
+winHeight = 600
+winWidth = 800
 
 pygame.init()
 win = pygame.display.set_mode((winWidth, winHeight))
@@ -72,7 +72,6 @@ def drawScreen(shipimg, heading, posx, posy):
 ### main function ========================================
 while run:
     spaceShip.forward = False
-
     pygame.time.delay(10)
 
     for event in pygame.event.get():
@@ -88,6 +87,9 @@ while run:
     if keys[pygame.K_SPACE]:
         spaceShip.fire = True
         spaceShip.projectileInit()
+    if keys[pygame.K_ESCAPE]:
+        pygame.QUIT
+        run = False
 
 
 
