@@ -2,7 +2,9 @@ import pygame
 import random
 import math
 from ship import Ship
+from projectile import Projectile
 from pygame import image as img
+
 
 # set window size
 winHeight = 800
@@ -12,8 +14,13 @@ winWidth = 1200
 pygame.init()
 win = pygame.display.set_mode((winWidth, winHeight))
 
+#load images
+spaceshipimglist = [img.load('spaceship0.png'), img.load('spaceship1.png'), img.load('spaceshipl.png'), img.load('spaceshipr.png')]
+# asteroidimageList = [img.load('rock1.png'), img.load('rock2.png'), img.load('rock2.png'), img.load('rock2.png'), img.load('rock2.png')]
+
+
 # create spaceship object and load sprites
-spaceShip = Ship(win, 0, 0.1, 6, winWidth/2 - 25, winHeight/2 - 25, False, winWidth, winHeight)
+spaceShip = Ship(win, 0, 0.1, 6, winWidth/2 - 25, winHeight/2 - 25, False, False, False, winWidth, winHeight, spaceshipimglist)
 spaceShip.loadimg()
 
 run = True
@@ -27,6 +34,35 @@ def rot_center(image, angle):
     rot_rect.center = rot_image.get_rect().center
     rot_image = rot_image.subsurface(rot_rect).copy()
     return rot_image
+### ======================================================
+
+### projectile creation and update =======================
+projectiles = []
+def projectileInit(object):
+    projectiles.append(Projectile(win, winWidth, winHeight, object.xpos + 25, object.ypos + 25, object.heading, object.velocity))
+
+def projectileUpdate():
+    i = 0
+    while ((i <len(projectiles)) & (len(projectiles) > 0)):
+        projectiles[i].updateImg()
+        if not projectiles[i].inBound:
+            projectiles.pop(i)
+            if i > 1:
+                i -= 1
+        i += 1
+### ======================================================
+
+### asteroids creation and update ========================
+asteroids = []
+def asteroidInit(surface, winWidth, winHeight, heading, xpos, ypos, velocity, radius, imageList):
+    asteroids.append(Asteroid(surface, winWidth, winHeight, heading, xpos, ypos, velocity, radius, imageList))
+
+def asteroidUpdate():
+    pass
+
+
+
+
 ### ======================================================
 
 ### background ===========================================
@@ -65,7 +101,7 @@ def drawScreen(shipimg, heading, posx, posy):
 
     spaceShip.move()
     if spaceShip.fire:
-        spaceShip.projectileUpdate()
+        projectileUpdate()
 
 
 
@@ -75,6 +111,8 @@ def drawScreen(shipimg, heading, posx, posy):
 ### main function ========================================
 while run:
     spaceShip.forward = False
+    spaceShip.right = False
+    spaceShip.left = False
     pygame.time.delay(10)
 
     # keypress handling
@@ -84,13 +122,15 @@ while run:
     keys =  pygame.key.get_pressed()
     if keys[pygame.K_RIGHT]:
         spaceShip.rotate(-5)
+        spaceShip.right = True
     if keys[pygame.K_LEFT]:
         spaceShip.rotate(5)
+        spaceShip.left = True
     if keys[pygame.K_UP]:
         spaceShip.forward = True
     if keys[pygame.K_SPACE]:
         spaceShip.fire = True
-        spaceShip.projectileInit()
+        projectileInit(spaceShip)
     if keys[pygame.K_ESCAPE]:
         pygame.QUIT
         run = False

@@ -1,12 +1,11 @@
 import pygame
 import math
-from projectile import Projectile
 from pygame import image as img
 
 
 class Ship:
 
-    def __init__(self, surface, heading, velocity, maxvelocity, xpos, ypos, forward, winWidth, winHeight):
+    def __init__(self, surface, heading, velocity, maxvelocity, xpos, ypos, forward, left, right, winWidth, winHeight, imagelist):
         self.surface = surface
         self.winWidth = winWidth
         self.winHeight = winHeight
@@ -16,16 +15,13 @@ class Ship:
         self.xpos = xpos
         self.ypos = ypos
         self.forward = forward
-        self.imagelist = []
-        self.imagelist.append(img.load('spaceship0.png'))
-        self.imagelist.append(img.load('spaceship1.png'))
+        self.left = left
+        self.right = right
+        self.imagelist = imagelist
         self.image = self.imagelist[0]
         self.acceleration = 0.1
         self.deceleration = 0.3
         self.fire = False
-        self.center = [self.xpos, self.ypos]
-        self.projectiles = []
-
 
     def rotate(self, angle):
         self.heading = self.heading % 360
@@ -37,7 +33,12 @@ class Ship:
         self.xpos -= (math.cos(math.radians(self.heading) - (math.pi / 2))) * self.velocity
         self.ypos += (math.sin(math.radians(self.heading) - (math.pi / 2))) * self.velocity
         if self.forward:
-            self.image = self.imagelist[1]
+            if self.right:
+                self.image = self.imagelist[3]
+            elif self.left:
+                self.image = self.imagelist[2]
+            else:
+                self.image = self.imagelist[1]
             if self.velocity < self.maxvelocity:
                 self.velocity += self.acceleration
             else:
@@ -50,22 +51,3 @@ class Ship:
 
     def loadimg(self):
         self.image = pygame.transform.scale(self.image, (50, 50))
-
-    def projectileInit(self):
-        self.projectiles.append(Projectile(self.surface, self.winWidth, self.winHeight, self.xpos + 25, self.ypos + 25, self.heading, self.velocity))
-
-    def projectileUpdate(self):
-        i = 0
-        while ((i <len(self.projectiles)) & (len(self.projectiles) > 0)):
-            self.projectiles[i].updateImg()
-            if not self.projectiles[i].inBound:
-                self.projectiles.pop(i)
-                if i > 1:
-                    i -= 1
-            i += 1
-        # if len(self.projectiles) > 0:
-        #     for i in range(len(self.projectiles)):
-        #         print(len(self.projectiles), i)
-        #         self.projectiles[i].updateImg()
-        #         if not self.projectiles[i].inBound:
-        #             self.projectiles.pop(i)
