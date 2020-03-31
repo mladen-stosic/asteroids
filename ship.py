@@ -51,3 +51,7 @@ class Ship:
 
     def loadimg(self):
         self.image = pygame.transform.scale(self.image, (50, 50))
+
+    def destroy(self, game_over):
+        # animate
+        return pygame.QUIT

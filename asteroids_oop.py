@@ -3,27 +3,44 @@ import random
 import math
 from ship import Ship
 from projectile import Projectile
+from asteroid import Asteroid
 from pygame import image as img
 
 
-# set window size
-winHeight = 800
-winWidth = 1200
-
+# declare constants
+ASTEROID_SIZE = (100, 100)
+WIN_HEIGHT = 800
+WIN_WIDTH = 1200
+WIN_CENTER = (WIN_WIDTH / 2, WIN_HEIGHT / 2)
+WHITE = (255,255,255)
 #initialize pygame and window surface
 pygame.init()
-win = pygame.display.set_mode((winWidth, winHeight))
+win = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
+pygame.display.set_caption('Asteroids')
+
+#text
+score = 0
+font = pygame.font.Font('freesansbold.ttf', 32)
+text = font.render('SCORE:  ' + str(score), True, WHITE)
+textRect = text.get_rect()
+textRect.center = (80, 20)
+
+
 
 #load images
 spaceshipimglist = [img.load('spaceship0.png'), img.load('spaceship1.png'), img.load('spaceshipl.png'), img.load('spaceshipr.png')]
 # asteroidimageList = [img.load('rock1.png'), img.load('rock2.png'), img.load('rock2.png'), img.load('rock2.png'), img.load('rock2.png')]
-
+asteroidImage = img.load('pngguru.com.png')
+asteroidImage = pygame.transform.scale(asteroidImage, ASTEROID_SIZE)
 
 # create spaceship object and load sprites
-spaceShip = Ship(win, 0, 0.1, 6, winWidth/2 - 25, winHeight/2 - 25, False, False, False, winWidth, winHeight, spaceshipimglist)
+spaceShip = Ship(win, 0, 0.1, 6, WIN_WIDTH/2 - 25, WIN_HEIGHT/2 - 25, False, False, False, WIN_WIDTH, WIN_HEIGHT, spaceshipimglist)
 spaceShip.loadimg()
 
 run = True
+game_over = False
+projectileTiming = 0
+gameTime = 0
 
 ### rotation function ====================================
 def rot_center(image, angle):
@@ -39,29 +56,57 @@ def rot_center(image, angle):
 ### projectile creation and update =======================
 projectiles = []
 def projectileInit(object):
-    projectiles.append(Projectile(win, winWidth, winHeight, object.xpos + 25, object.ypos + 25, object.heading, object.velocity))
+    projectiles.append(Projectile(win, WIN_WIDTH, WIN_HEIGHT, object.xpos + 25, object.ypos + 25, object.heading, object.velocity))
 
-def projectileUpdate():
+def projectileUpdate(asteroids):
     i = 0
     while ((i <len(projectiles)) & (len(projectiles) > 0)):
         projectiles[i].updateImg()
-        if not projectiles[i].inBound:
+
+        if (not projectiles[i].inBound):
             projectiles.pop(i)
             if i > 1:
                 i -= 1
         i += 1
 ### ======================================================
 
+
+### collision detection
+
+def collisionDetection():
+    global projectiles, asteroids, score, run, game_over
+    indexesi = []
+    indexesj = []
+    for i in range(len(asteroids)):
+        for j in range(len(projectiles)):
+            if (abs(projectiles[j].x - asteroids[i].center()[0]) < asteroids[i].radius) and (abs(projectiles[j].y - asteroids[i].center()[1]) < asteroids[i].radius):
+                indexesi.append(i)
+                indexesj.append(j)
+                score += 1
+    for ind in indexesj:
+        projectiles.remove(projectiles[ind])
+    for ind in indexesi:
+        asteroids.remove(asteroids[ind])
+    for i in range(len(asteroids)):
+        if (abs(spaceShip.xpos + 25 - asteroids[i].center()[0]) < asteroids[i].radius) and (abs(spaceShip.ypos + 25 - asteroids[i].center()[1]) < asteroids[i].radius):
+            game_over = True
+
+
 ### asteroids creation and update ========================
 asteroids = []
-def asteroidInit(surface, winWidth, winHeight, heading, xpos, ypos, velocity, radius, imageList):
-    asteroids.append(Asteroid(surface, winWidth, winHeight, heading, xpos, ypos, velocity, radius, imageList))
+def asteroidInit(surface, WIN_WIDTH, WIN_HEIGHT):
+    asteroids.append(Asteroid(surface, WIN_WIDTH, WIN_HEIGHT, random.randint(0, 360), random.randint(0, WIN_WIDTH), random.randint(0, WIN_HEIGHT), 2*random.random(), 50, asteroidImage))
 
 def asteroidUpdate():
-    pass
+    i = 0
+    while ((i < len(asteroids)) & (len(asteroids) > 0)):
+        asteroids[i].updateImg()
 
-
-
+        if (not asteroids[i].inBound):
+            asteroids.pop(i)
+            if i > 1:
+                i -= 1
+        i += 1
 
 ### ======================================================
 
@@ -71,38 +116,55 @@ bgx = []
 bgy = []
 bgr = []
 for i in range(1000):
-    bgx.append(random.randrange(5, winWidth - 5, 1))
-    bgy.append(random.randrange(5, winHeight - 5, 1))
+    bgx.append(random.randrange(5, WIN_WIDTH - 5, 1))
+    bgy.append(random.randrange(5, WIN_HEIGHT - 5, 1))
     bgr.append(random.randrange(0, 3))
 
 def drawBg():
 
     for i in range(1000):
-        pygame.draw.circle(win, (255,255,255), (bgx[i],bgy[i]), bgr[i])
+        pygame.draw.circle(win, WHITE, (bgx[i], bgy[i]), bgr[i])
         partVel = 1
         bgy[i] += partVel
-        if bgx[i] >= winWidth:
+        if bgx[i] >= WIN_WIDTH:
             bgx[i] = 0
-        if bgy[i] >= winHeight:
+        if bgy[i] >= WIN_HEIGHT:
             bgy[i] = 0
         if bgx[i] < 0:
-            bgx[i] = winWidth
+            bgx[i] = WIN_WIDTH
         if bgy[i] < 0:
-            bgy[i] = winHeight
+            bgy[i] = WIN_HEIGHT
 
 ### ======================================================
 
 ### draw function=========================================
 def drawScreen(shipimg, heading, posx, posy):
-    win.fill((0,0,0))
-    drawBg()
-    shipimg = rot_center(shipimg, heading)
-    win.blit(shipimg, (posx, posy))
-
-    spaceShip.move()
-    if spaceShip.fire:
-        projectileUpdate()
-
+    global  text, textRect, game_over
+    if not game_over:
+        win.fill((0,0,0))
+        drawBg()
+        text = font.render('SCORE:  ' + str(score), True, WHITE)
+        win.blit(text, textRect)
+        shipimg = rot_center(shipimg, heading)
+        win.blit(shipimg, (posx, posy))
+        pygame.draw.line(win, WHITE, WIN_CENTER, (WIN_WIDTH/2 + 100*math.cos(math.radians(heading)), WIN_HEIGHT/2 - 100*math.sin(math.radians(heading))))
+        pygame.draw.circle(win, WHITE, (round(spaceShip.xpos), round(spaceShip.ypos)), 4)
+        spaceShip.move()
+        asteroidUpdate()
+        for i in range(len(asteroids)):
+            asteroids[i].draw()
+        if spaceShip.fire:
+            projectileUpdate(asteroids)
+    else:
+        win.fill((0, 0, 0))
+        text = font.render('GAME OVER, YOUR SCORE IS :  ' + str(score), True, WHITE)
+        textRect = text.get_rect()
+        textRect.center = (WIN_WIDTH / 2, WIN_HEIGHT / 2)
+        win.blit(text, textRect)
+        esctoquit = font.render("PRESS ESCAPE TO EXIT", True, WHITE)
+        escRect = esctoquit.get_rect()
+        escRect.center = (WIN_WIDTH / 2, WIN_HEIGHT / 2 + 32)
+        win.blit(esctoquit, escRect)
 
 
     pygame.display.update()
@@ -113,7 +175,15 @@ while run:
     spaceShip.forward = False
     spaceShip.right = False
     spaceShip.left = False
+
     pygame.time.delay(10)
+    projectileTiming = projectileTiming % 30
+    if gameTime % 200 == 0:
+        gameTime = 0
+        asteroidInit(win, WIN_WIDTH, WIN_HEIGHT)
+
+    #if (len(projectiles) > 0) and (len(asteroids) > 0):
+    collisionDetection()
 
     # keypress handling
     for event in pygame.event.get():
@@ -129,13 +199,18 @@ while run:
     if keys[pygame.K_UP]:
         spaceShip.forward = True
     if keys[pygame.K_SPACE]:
-        spaceShip.fire = True
-        projectileInit(spaceShip)
+        if projectileTiming > 15:
+            spaceShip.fire = True
+            projectileInit(spaceShip)
+            projectileTiming = 0
     if keys[pygame.K_ESCAPE]:
         pygame.QUIT
         run = False
 
 
+
+    projectileTiming += 1
+    gameTime += 1
 
 
     drawScreen(spaceShip.image, spaceShip.heading, spaceShip.xpos, spaceShip.ypos)

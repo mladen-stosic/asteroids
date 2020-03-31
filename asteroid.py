@@ -4,7 +4,7 @@ from pygame import image as img
 
 class Asteroid():
 
-    def __init__(self, surface, winWidth, winHeight, heading, xpos, ypos, velocity, radius, imageList):
+    def __init__(self, surface, winWidth, winHeight, heading, xpos, ypos, velocity, radius, image):
         self.surface = surface
         self.winWidth = winWidth
         self.winHeight = winHeight
@@ -13,14 +13,21 @@ class Asteroid():
         self.xpos = xpos
         self.ypos = ypos
         self.radius = radius
-        self.imageList = imageList
+        self.inBound = True
+        self.image = image
 
     def updateImg(self):
         self.xpos -= (math.cos(math.radians(self.heading) - (math.pi / 2))) * self.velocity
         self.ypos += (math.sin(math.radians(self.heading) - (math.pi / 2))) * self.velocity
 
         # check if its in boundaries
-        if ((self.x > self.winWidth) | (self.x < 0) | (self.y > self.winHeight) | (self.y < 0)):
-            self.inBound = False
-        if self.inBound:
-            self.img = imageList[radius % 10]
+        if ((self.xpos > self.winWidth) | (self.xpos < 0) | (self.ypos > self.winHeight) | (self.ypos < 0)):
+             self.inBound = False
+        # if self.inBound:
+        #      self.image = image
+
+    def center(self):
+        return (self.xpos + 24, self.ypos + 25)
+    def draw(self):
+        self.surface.blit(self.image, (self.xpos, self.ypos))
+
