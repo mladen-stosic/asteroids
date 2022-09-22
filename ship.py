@@ -29,7 +29,7 @@ class Ship:
 
     def move(self):
         self.image = self.imagelist[0]
-        self.center =  [self.xpos + 25, self.ypos + 25]
+        self.center =  [self.xpos + 36, self.ypos + 36]
         self.xpos -= (math.cos(math.radians(self.heading) - (math.pi / 2))) * self.velocity
         self.ypos += (math.sin(math.radians(self.heading) - (math.pi / 2))) * self.velocity
         if self.forward:
@@ -48,6 +48,14 @@ class Ship:
         else:
             if self.velocity > 0:
                 self.velocity -= self.deceleration
+        if self.xpos < 0:
+            self.xpos = self.winWidth - 36
+        if self.xpos > self.winWidth:
+            self.xpos = 0
+        if self.ypos < 0:
+            self.ypos = self.winHeight
+        if self.ypos > self.winHeight:
+            self.ypos = 0
 
     def loadimg(self):
         self.image = pygame.transform.scale(self.image, (50, 50))

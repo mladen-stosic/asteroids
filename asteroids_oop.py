@@ -2,14 +2,12 @@ import pygame
 import random
 import math
 from ship import Ship
-from projectile import Projectile
 from asteroid import Asteroid
+from projectile import Projectile
 from pygame import image as img
 
 
 # declare constants
-ASTEROID_RADIUS = 80
-ASTEROID_SIZE = (2*ASTEROID_RADIUS, 2*ASTEROID_RADIUS)
 WIN_HEIGHT = 800
 WIN_WIDTH = 1200
 WIN_CENTER = (WIN_WIDTH / 2, WIN_HEIGHT / 2)
@@ -30,10 +28,9 @@ textRect.center = (80, 20)
 spaceshipimglist = [img.load('sprites/spaceship0.png'), img.load('sprites/spaceship1.png'), img.load('sprites/spaceshipl.png'), img.load('sprites/spaceshipr.png')]
 # asteroidimageList = [img.load('rock1.png'), img.load('rock2.png'), img.load('rock2.png'), img.load('rock2.png'), img.load('rock2.png')]
 asteroidImage = img.load('sprites/pngguru.com.png')
-asteroidImage = pygame.transform.scale(asteroidImage, ASTEROID_SIZE)
 
 # create spaceship object and load sprites
-spaceShip = Ship(win, 0, 0.1, 6, WIN_WIDTH/2 - 25, WIN_HEIGHT/2 - 25, False, False, False, WIN_WIDTH, WIN_HEIGHT, spaceshipimglist)
+spaceShip = Ship(win, 0, 0.1, 6, WIN_WIDTH/2 - 36, WIN_HEIGHT/2 - 36, False, False, False, WIN_WIDTH, WIN_HEIGHT, spaceshipimglist)
 spaceShip.loadimg()
 
 run = True
@@ -55,11 +52,11 @@ def rot_center(image, angle):
 ### projectile creation and update =======================
 projectiles = []
 def projectileInit(object):
-    projectiles.append(Projectile(win, WIN_WIDTH, WIN_HEIGHT, object.xpos + 25, object.ypos + 25, object.heading, object.velocity))
+    projectiles.append(Projectile(win, WIN_WIDTH, WIN_HEIGHT, object.xpos + 36, object.ypos + 36, object.heading, object.velocity))
 
 def projectileUpdate(asteroids):
     i = 0
-    while ((i <len(projectiles)) & (len(projectiles) > 0)):
+    while ((i < len(projectiles)) & (len(projectiles) > 0)):
         projectiles[i].updateImg()
 
         if (not projectiles[i].inBound):
@@ -217,10 +214,7 @@ while run:
         pygame.QUIT
         run = False
 
-
-
     projectileTiming += 1
     gameTime += 1
-
 
     drawScreen(spaceShip.image, spaceShip.heading, spaceShip.xpos, spaceShip.ypos)

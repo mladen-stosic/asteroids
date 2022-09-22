@@ -21,7 +21,7 @@ class Asteroid():
         self.ypos += (math.sin(math.radians(self.heading) - (math.pi / 2))) * self.velocity
 
         # check if its in boundaries
-        if ((self.xpos > self.winWidth) | (self.xpos < 0) | (self.ypos > self.winHeight) | (self.ypos < 0)):
+        if ((self.xpos + 2*self.radius > self.winWidth) | (self.xpos < 0) | (self.ypos + 2*self.radius > self.winHeight) | (self.ypos < 0)):
              self.inBound = False
 
     def center(self):
