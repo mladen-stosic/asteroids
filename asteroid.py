@@ -23,11 +23,10 @@ class Asteroid():
         # check if its in boundaries
         if ((self.xpos > self.winWidth) | (self.xpos < 0) | (self.ypos > self.winHeight) | (self.ypos < 0)):
              self.inBound = False
-        # if self.inBound:
-        #      self.image = image
 
     def center(self):
-        return (self.xpos + 24, self.ypos + 25)
+        return (self.xpos + self.radius, self.ypos + self.radius)
+
     def draw(self):
         self.surface.blit(self.image, (self.xpos, self.ypos))
 

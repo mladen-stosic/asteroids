@@ -8,7 +8,8 @@ from pygame import image as img
 
 
 # declare constants
-ASTEROID_SIZE = (100, 100)
+ASTEROID_RADIUS = 80
+ASTEROID_SIZE = (2*ASTEROID_RADIUS, 2*ASTEROID_RADIUS)
 WIN_HEIGHT = 800
 WIN_WIDTH = 1200
 WIN_CENTER = (WIN_WIDTH / 2, WIN_HEIGHT / 2)
@@ -25,12 +26,10 @@ text = font.render('SCORE:  ' + str(score), True, WHITE)
 textRect = text.get_rect()
 textRect.center = (80, 20)
 
-
-
 #load images
-spaceshipimglist = [img.load('spaceship0.png'), img.load('spaceship1.png'), img.load('spaceshipl.png'), img.load('spaceshipr.png')]
+spaceshipimglist = [img.load('sprites/spaceship0.png'), img.load('sprites/spaceship1.png'), img.load('sprites/spaceshipl.png'), img.load('sprites/spaceshipr.png')]
 # asteroidimageList = [img.load('rock1.png'), img.load('rock2.png'), img.load('rock2.png'), img.load('rock2.png'), img.load('rock2.png')]
-asteroidImage = img.load('pngguru.com.png')
+asteroidImage = img.load('sprites/pngguru.com.png')
 asteroidImage = pygame.transform.scale(asteroidImage, ASTEROID_SIZE)
 
 # create spaceship object and load sprites
@@ -88,14 +87,24 @@ def collisionDetection():
     for ind in indexesi:
         asteroids.remove(asteroids[ind])
     for i in range(len(asteroids)):
-        if (abs(spaceShip.xpos + 25 - asteroids[i].center()[0]) < asteroids[i].radius) and (abs(spaceShip.ypos + 25 - asteroids[i].center()[1]) < asteroids[i].radius):
+        if (abs(spaceShip.xpos + 36 - asteroids[i].center()[0]) < asteroids[i].radius + 20) and (abs(spaceShip.ypos + 36 - asteroids[i].center()[1]) < asteroids[i].radius + 20):
             game_over = True
 
 
 ### asteroids creation and update ========================
 asteroids = []
 def asteroidInit(surface, WIN_WIDTH, WIN_HEIGHT):
-    asteroids.append(Asteroid(surface, WIN_WIDTH, WIN_HEIGHT, random.randint(0, 360), random.randint(0, WIN_WIDTH), random.randint(0, WIN_HEIGHT), 2*random.random(), 50, asteroidImage))
+    asteroidRadius = random.randint(30, 80)
+    asteroidSize = (2*asteroidRadius, 2*asteroidRadius)
+    asteroidImageScaled = pygame.transform.scale(asteroidImage, asteroidSize)
+    asteroidX = random.randint(0, WIN_WIDTH)
+    asteroidY = random.randint(0, WIN_HEIGHT)
+    if (abs((spaceShip.xpos + 36) - asteroidX) < 100):
+        asteroidX += 100
+    if (abs((spaceShip.ypos + 36) - asteroidY) < 100):
+        asteroidY += 100
+
+    asteroids.append(Asteroid(surface, WIN_WIDTH, WIN_HEIGHT, random.randint(0, 360), asteroidX, asteroidY, 2*random.random(), asteroidRadius, asteroidImageScaled))
 
 def asteroidUpdate():
     i = 0
@@ -147,12 +156,13 @@ def drawScreen(shipimg, heading, posx, posy):
         win.blit(text, textRect)
         shipimg = rot_center(shipimg, heading)
         win.blit(shipimg, (posx, posy))
-        pygame.draw.line(win, WHITE, WIN_CENTER, (WIN_WIDTH/2 + 100*math.cos(math.radians(heading)), WIN_HEIGHT/2 - 100*math.sin(math.radians(heading))))
-        pygame.draw.circle(win, WHITE, (round(spaceShip.xpos), round(spaceShip.ypos)), 4)
+        #pygame.draw.line(win, WHITE, WIN_CENTER, (WIN_WIDTH/2 + 100*math.cos(math.radians(heading)), WIN_HEIGHT/2 - 100*math.sin(math.radians(heading))))
+        pygame.draw.circle(win, WHITE, (round(spaceShip.xpos) + 36, round(spaceShip.ypos) + 36), 4)
         spaceShip.move()
         asteroidUpdate()
         for i in range(len(asteroids)):
             asteroids[i].draw()
+            pygame.draw.circle(win, WHITE, (round(asteroids[i].xpos + asteroids[i].radius), round(asteroids[i].ypos + asteroids[i].radius)), 5)
         if spaceShip.fire:
             projectileUpdate(asteroids)
     else:
