@@ -1,2 +1,2 @@
 ## Asteroids
-Simple asteroids game using oop concepts
+Asteroids python game written with pygame using oop concepts
